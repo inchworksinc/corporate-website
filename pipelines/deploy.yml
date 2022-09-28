@@ -1,0 +1,127 @@
+parameters:
+- name: vmImageName 
+  type: string
+  default: "ubuntu-latest"
+- name: azureServiceConnection
+  type: string
+- name: subscription
+  type: string
+- name: location
+  type: string
+- name: environment
+  type: string
+- name: workload
+  type: string
+- name: artifact
+  type: string
+- name: ciPipeline
+  type: string
+- name: bicepFile
+  type: string
+- name: parametersFile
+  type: string
+
+stages:
+- stage: deploy
+  displayName: Continuous Delivery
+  jobs:
+  - deployment: DeployCorporateWebsiteApplication
+    displayName: Deploying Application
+    pool:
+      vmImage: ${{ parameters.vmImageName }}
+    environment: ${{ parameters.environment }}
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          # downloading build artifacts
+          - download:  ${{ parameters.ciPipeline }}
+            displayName: Downloading ${{ parameters.ciPipeline }} build artifacts
+            artifact: '${{ parameters.artifact }}-app'
+          # copying build artifacts to a local folder
+          - task: CopyFiles@2
+            displayName: Copying ${{ parameters.ciPipeline }} build files to a static app folder
+            inputs:
+              SourceFolder: '$(Pipeline.Workspace)/${{ parameters.ciPipeline }}/${{ parameters.artifact }}-app'
+              TargetFolder: 'app'
+              CleanTargetFolder: true
+          # Create a zip archive of app folder to upload to app service later
+          - task: ArchiveFiles@2
+            displayName: 'Archive application files'
+            inputs:
+              rootFolderOrFile: '$(System.DefaultWorkingDirectory)/app'
+              includeRootFolder: false
+              archiveType: zip
+              archiveFile: '$(artifact)-app.zip'
+              replaceExistingArchive: true
+          # downloading infrastructure artifacts  
+          - download: ${{ parameters.ciPipeline }}
+            displayName: Downloading ${{ parameters.ciPipeline }} infrastructure artifacts
+            artifact: '${{ parameters.artifact }}-infrastructure'
+          # copying infrastructure files to a local folder
+          - task: CopyFiles@2
+            displayName: Copying ${{ parameters.ciPipeline }} infrastructure files to an infrastructure folder
+            inputs:
+              SourceFolder: '$(Pipeline.Workspace)/${{ parameters.ciPipeline }}/${{ parameters.artifact }}-infrastructure'
+              TargetFolder: 'infrastructure'
+              CleanTargetFolder: true
+          # validate bicep code
+          - task: AzureCLI@2
+            displayName: Validating the Bicep code
+            inputs:
+              azureSubscription: ${{ parameters.azureServiceConnection }}
+              scriptType: bash
+              scriptLocation: inlineScript
+              workingDirectory: infrastructure
+              addSpnToEnvironment: true
+              inlineScript: |
+                az deployment sub validate  --subscription ${{ parameters.subscription }} --location ${{ parameters.location }} \
+                --name ${{ parameters.workload }}-${{ parameters.environment }}-$(Build.BuildNumber) \
+                --template-file ${{ parameters.bicepFile }} \
+                --parameters ${{ parameters.parametersFile }} \
+                --parameters location=${{ parameters.location }} --parameters environment=${{ parameters.environment }} \
+                --parameters workload=${{ parameters.workload }} --parameters artifact=${{ parameters.artifact }} \
+                --parameters deploymentIdentity=$servicePrincipalId
+          # deploy bicep code
+          - task: AzureCLI@2
+            displayName: Creating the infrastructure needed
+            inputs:
+              azureSubscription: ${{ parameters.azureServiceConnection }}
+              scriptType: bash
+              scriptLocation: inlineScript
+              workingDirectory: infrastructure
+              addSpnToEnvironment: true
+              inlineScript: |
+                az deployment sub create --subscription ${{ parameters.subscription }} --location ${{ parameters.location }} \
+                --name ${{ parameters.workload }}-${{ parameters.environment }}-$(Build.BuildNumber) \
+                --template-file ${{ parameters.bicepFile }} \
+                --parameters ${{ parameters.parametersFile }} \
+                --parameters location=${{ parameters.location }} --parameters environment=${{ parameters.environment }} \
+                --parameters workload=${{ parameters.workload }} --parameters artifact=${{ parameters.artifact }} \
+                --parameters deploymentIdentity=$servicePrincipalId
+          # setup application settings
+          - task: AzureAppServiceSettings@1
+            displayName: Azure App Service Settings
+            inputs:
+              azureSubscription: ${{ parameters.azureServiceConnection }}
+              appName: app-${{ parameters.workload }}-${{ parameters.artifact }}-${{ parameters.environment }}-${{ parameters.location }}
+            # To deploy the settings on a slot, provide slot name as below. By default, the settings would be applied to the actual Web App (Production slot)
+            # slotName: staging
+              appSettings: |
+                [
+                  {
+                    "name": "environment",
+                    "value": "${{ parameters.environment }}", 
+                    "slotSetting": false
+                  }
+                ]
+          # upload artifact to app service
+          - task: AzureWebApp@1
+            displayName: Publishing latest code
+            inputs:        
+              azureSubscription: $(azureServiceConnection)
+              resourceGroupName: rg-${{ parameters.workload }}-${{ parameters.environment }}-${{ parameters.location }} 
+              appName: app-${{ parameters.workload }}-${{ parameters.artifact }}-${{ parameters.environment }}-${{ parameters.location }}
+              package: '$(System.DefaultWorkingDirectory)/$(artifact)-app.zip'
+              deployToSlotOrASE: false
+              deploymentMethod: zipDeploy
