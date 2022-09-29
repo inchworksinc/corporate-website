@@ -50,3 +50,12 @@ module appServiceModule 'app-service.bicep' = {
     tags: tags
   }
 }
+
+@description('A module to configure App Service resources')
+module subnetModule 'subnet.bicep' = {
+  name: '${resourceGroup().name}-subnet-module'
+  scope: resourceGroup('rg-network-nonprod-eastus2-001')
+  params: {
+    vnet: vnet
+  }
+}
