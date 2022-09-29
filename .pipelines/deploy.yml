@@ -77,7 +77,7 @@ stages:
                 --name ${{ parameters.workload }}-${{ parameters.environment }}-$(Build.BuildNumber) \
                 --template-file ${{ parameters.bicepFile }} \
                 --parameters location=${{ parameters.location }} --parameters environment=${{ parameters.environment }} \
-                --parameters workload=${{ parameters.workload }} --parameters artifact=${{ parameters.resource }}
+                --parameters workload=${{ parameters.workload }} --parameters artifact=${{ parameters.artifact }}
           # deploy bicep code
           - task: AzureCLI@2
             displayName: Creating the infrastructure needed
@@ -92,7 +92,7 @@ stages:
                 --name ${{ parameters.workload }}-${{ parameters.environment }}-$(Build.BuildNumber) \
                 --template-file ${{ parameters.bicepFile }} \
                 --parameters location=${{ parameters.location }} --parameters environment=${{ parameters.environment }} \
-                --parameters workload=${{ parameters.workload }} --parameters artifact=${{ parameters.resource }}
+                --parameters workload=${{ parameters.workload }} --parameters artifact=${{ parameters.artifact }}
           # setup application settings
           - task: AzureAppServiceSettings@1
             displayName: Azure App Service Settings
