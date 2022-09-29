@@ -40,8 +40,10 @@ const Home: NextPage<PageProp> = ({ fact }) => {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const response = await fetch("http://10.1.3.4");
+  console.log("Invoking apache on VM inside VNET")
   const fact = await response.text();
-
+  console.log("apache response - ",fact);
+  
   return {
     props: {
       fact: fact
