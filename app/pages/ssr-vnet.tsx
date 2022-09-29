@@ -41,13 +41,13 @@ const Home: NextPage<PageProp> = ({ fact }) => {
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  console.log("Invoking apache on VM inside VNET")
-  const response = await fetch("http://10.1.3.4");
-  const htmlResponse = await response.text();
-  console.log(`apache response - ${htmlResponse}`);
+  console.log("Invoking API Management Instance using internal endpoint")
+  const response = await fetch("https://dev.inchworks.net/echo/resource?param1=sample");
+  const responseCode = response.status;
+  console.log(`response code from API - ${responseCode}`);
 
   const fact = {
-    fact: htmlResponse
+    fact: responseCode
   }
 
   return {
