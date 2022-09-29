@@ -1,0 +1,34 @@
+trigger: none
+
+resources:
+  pipelines:
+  - pipeline: corporate-website-vnet-integrated-build
+    project: Marketing
+    source: corporate-website-vnet-integrated-build
+    trigger:
+      branches:
+        include:
+        - main
+
+variables:
+- group: development # Generic environment variables
+- name: workload
+  value: 'corporate-website'
+- name: artifact
+  value: 'corporate-website'
+- name: ciPipeline
+  value: 'corporate-website-vnet-integrated-build'
+- name: bicepFile
+  value: main.bicep
+
+extends:
+  template: deploy.yml
+  parameters:
+    azureServiceConnection: $(azureServiceConnection)
+    subscription: $(subscription)
+    location: $(location)
+    environment: $(environment)
+    workload: ${{ variables.workload }}
+    artifact: ${{ variables.artifact }}
+    ciPipeline:  ${{ variables.ciPipeline }}
+    bicepFile: ${{ variables.bicepFile }}
