@@ -1,0 +1,8 @@
+node_modules
+coverage
+build
+junit.xml
+.swc
+.next
+out
+.next
