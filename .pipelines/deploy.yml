@@ -67,18 +67,17 @@ stages:
           - task: AzureCLI@2
             displayName: Validating the Bicep code
             inputs:
-              azureSubscription: ${{ parameters.azureServiceConnection }}
+              azureSubscription: $(azureServiceConnection)
               scriptType: bash
               scriptLocation: inlineScript
               workingDirectory: infrastructure
               addSpnToEnvironment: true
               inlineScript: |
-                az deployment sub validate  --subscription ${{ parameters.subscription }} --location ${{ parameters.location }} \
+                az deployment group validate --resource-group  rg-${{ parameters.workload }}-${{ parameters.environment }}-${{ parameters.location }} --subscription ${{ parameters.subscription }} \
                 --name ${{ parameters.workload }}-${{ parameters.environment }}-$(Build.BuildNumber) \
                 --template-file ${{ parameters.bicepFile }} \
                 --parameters location=${{ parameters.location }} --parameters environment=${{ parameters.environment }} \
-                --parameters workload=${{ parameters.workload }} --parameters artifact=${{ parameters.artifact }} \
-                --parameters deploymentIdentity=$servicePrincipalId
+                --parameters workload=${{ parameters.workload }} --parameters artifact=${{ parameters.resource }}
           # deploy bicep code
           - task: AzureCLI@2
             displayName: Creating the infrastructure needed
@@ -89,12 +88,11 @@ stages:
               workingDirectory: infrastructure
               addSpnToEnvironment: true
               inlineScript: |
-                az deployment sub create --subscription ${{ parameters.subscription }} --location ${{ parameters.location }} \
+                az deployment group create --resource-group  rg-${{ parameters.workload }}-${{ parameters.environment }}-${{ parameters.location }} --subscription ${{ parameters.subscription }} \
                 --name ${{ parameters.workload }}-${{ parameters.environment }}-$(Build.BuildNumber) \
                 --template-file ${{ parameters.bicepFile }} \
                 --parameters location=${{ parameters.location }} --parameters environment=${{ parameters.environment }} \
-                --parameters workload=${{ parameters.workload }} --parameters artifact=${{ parameters.artifact }} \
-                --parameters deploymentIdentity=$servicePrincipalId
+                --parameters workload=${{ parameters.workload }} --parameters artifact=${{ parameters.resource }}
           # setup application settings
           - task: AzureAppServiceSettings@1
             displayName: Azure App Service Settings
