@@ -9,6 +9,8 @@ interface PageProp {
 }
 
 const Home: NextPage<PageProp> = ({ fact }) => {
+    console.log(`fact - ${fact}`)
+    console.log(`fact - ${fact.fact}`)
   return (
     <div className={styles.container}>
       <Head>
@@ -47,7 +49,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const fact = {
     fact: htmlResponse
   }
-  
+
   return {
     props: {
       fact,
