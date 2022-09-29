@@ -19,10 +19,10 @@ param tags object = {}
 @description('Runtime stack')
 param linuxFxVersion string = 'node|16-lts'
 
-resource vnet 'Microsoft.Network/virtualNetworks@2020-06-01' existing = {
-  name: 'vnet-network-non-prod-eastus2-001'
-  scope: resourceGroup('rg-network-nonprod-eastus2-001')
-}
+// resource vnet 'Microsoft.Network/virtualNetworks@2020-06-01' existing = {
+//   name: 'vnet-network-non-prod-eastus2-001'
+//   scope: resourceGroup('rg-network-nonprod-eastus2-001')
+// }
 
 @description('An App service plan to host the app')
 resource appServicePlan 'Microsoft.Web/serverfarms@2020-06-01' = {
@@ -46,7 +46,7 @@ resource appService 'Microsoft.Web/sites@2022-03-01' = {
   properties: {
     serverFarmId: appServicePlan.id
     //virtualNetworkSubnetId: vnet.properties.subnets[0].id
-    virtualNetworkSubnetId: resourceId('Microsoft.Network/VirtualNetworks/subnets', vnet.name, 'AppServiceSubnet')
+    virtualNetworkSubnetId: resourceId('Microsoft.Network/VirtualNetworks/subnets', 'vnet-network-non-prod-eastus2-001', 'AppServiceSubnet')
     siteConfig: {
       vnetRouteAllEnabled: true
       linuxFxVersion: linuxFxVersion
