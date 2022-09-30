@@ -1,6 +1,7 @@
 import type { NextPage, GetServerSideProps } from "next";
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
+const https = require('https');
 const axios = require('axios').default;
 
 interface PageProp {
@@ -42,13 +43,15 @@ const Home: NextPage<PageProp> = ({ fact }) => {
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  console.log("Invoking API Management Instance using internal endpoint")
-  axios.get("https://dev.inchworks.net/echo/resource?param1=sample")
-  .then((response:any) => {
-    console.info("headers:", response.headers)
-  })
-  const response = await fetch("https://dev.inchworks.net/echo/resource?param1=sample");
+  console.log("Invoking API Management Instance using internal endpoint");
+  const agent = new https.Agent({  
+    rejectUnauthorized: false
+  });  
+  const response = await axios.get("https://dev.inchworks.net/echo/resource?param1=sample", { httpsAgent: agent })
+  console.info("headers:", response.headers)
   const responseCode = response.status;
+  //const response = await fetch("https://dev.inchworks.net/echo/resource?param1=sample");
+  //const responseCode = response.status;
   console.log(`response code from API - ${responseCode}`);
 
   const fact = {
