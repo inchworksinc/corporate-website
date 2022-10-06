@@ -33,12 +33,12 @@ stages:
           # downloading build artifacts
           - download:  ${{ parameters.ciPipeline }}
             displayName: Downloading ${{ parameters.ciPipeline }} build artifacts
-            artifact: '${{ parameters.artifact }}-app'
+            artifact: '${{ parameters.workload }}-app'
           # copying build artifacts to a local folder
           - task: CopyFiles@2
             displayName: Copying ${{ parameters.ciPipeline }} build files to a static app folder
             inputs:
-              SourceFolder: '$(Pipeline.Workspace)/${{ parameters.ciPipeline }}/${{ parameters.artifact }}-app'
+              SourceFolder: '$(Pipeline.Workspace)/${{ parameters.ciPipeline }}/${{ parameters.workload }}-app'
               TargetFolder: 'app'
               CleanTargetFolder: true
           # Create a zip archive of app folder to upload to app service later
@@ -53,12 +53,12 @@ stages:
           # downloading infrastructure artifacts  
           - download: ${{ parameters.ciPipeline }}
             displayName: Downloading ${{ parameters.ciPipeline }} infrastructure artifacts
-            artifact: '${{ parameters.artifact }}-infrastructure'
+            artifact: '${{ parameters.workload }}-infrastructure'
           # copying infrastructure files to a local folder
           - task: CopyFiles@2
             displayName: Copying ${{ parameters.ciPipeline }} infrastructure files to an infrastructure folder
             inputs:
-              SourceFolder: '$(Pipeline.Workspace)/${{ parameters.ciPipeline }}/${{ parameters.artifact }}-infrastructure'
+              SourceFolder: '$(Pipeline.Workspace)/${{ parameters.ciPipeline }}/${{ parameters.workload }}-infrastructure'
               TargetFolder: 'infrastructure'
               CleanTargetFolder: true
           # validate bicep code
