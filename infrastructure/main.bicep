@@ -1,11 +1,8 @@
-@description('Workload name')
+@description('Workload name abbreviation')
 param workload string
 
-@description('Environment name')
+@description('Environment name abbreviation')
 param environment string
-
-@description('Artifact name')
-param artifact string
 
 @description('Business Unit name. In this case its the Marketing Unit')
 param businessUnit string = 'marketing'
@@ -29,7 +26,6 @@ var config = configModule.outputs.settings
 
 @description('The tags to be added for this workload')
 var tags = {
-  Artifact: artifact
   Workload: workload
   BusinessUnit: businessUnit
   Environment: environment
@@ -37,16 +33,23 @@ var tags = {
   Monitorable: config.monitorable
 }
 
+@description('Obtaining reference to the subnet dedicated to the App Service Management with delegation to Microsoft.Web/serverfarms')
+resource appServiceSubnet 'Microsoft.Network/virtualNetworks/subnets@2021-08-01' existing = {
+  name: '${config.virtualNetworkName}/${config.subnetName}'
+  scope: resourceGroup(config.virtualNetworkResourceGroupName)
+}
+
+
 @description('A module to configure App Service resources')
 module appServiceModule 'app-service.bicep' = {
   name: '${resourceGroup().name}-app-service-module'
   scope: resourceGroup()
   params: {
     workload: workload
-    artifact: artifact
     environment: environment
     location: location
     configuration: config
+    appServiceSubnetId: appServiceSubnet.id
     tags: tags
   }
 }

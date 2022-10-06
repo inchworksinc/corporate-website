@@ -12,7 +12,7 @@ resources:
     #     - main
 
 variables:
-- group: corporate-website-dev # Generic environment variables
+- group: corporate-website-prd # Generic environment variables
 - name: workload
   value: 'corporate-website'
 - name: ciPipeline

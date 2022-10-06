@@ -12,8 +12,6 @@ parameters:
   type: string
 - name: workload
   type: string
-- name: artifact
-  type: string
 - name: ciPipeline
   type: string
 - name: bicepFile
@@ -77,8 +75,7 @@ stages:
                 --name ${{ parameters.workload }}-${{ parameters.environment }}-$(Build.BuildNumber) \
                 --template-file ${{ parameters.bicepFile }} \
                 --parameters location=${{ parameters.location }} --parameters environment=${{ parameters.environment }} \
-                --parameters workload=${{ parameters.workload }} --parameters artifact=${{ parameters.artifact }} \
-                --parameters deploymentIdentity=$servicePrincipalId
+                --parameters workload=${{ parameters.workload }} --parameters } --parameters deploymentIdentity=$servicePrincipalId
           # deploy bicep code
           - task: AzureCLI@2
             displayName: Creating the infrastructure needed
@@ -93,14 +90,13 @@ stages:
                 --name ${{ parameters.workload }}-${{ parameters.environment }}-$(Build.BuildNumber) \
                 --template-file ${{ parameters.bicepFile }} \
                 --parameters location=${{ parameters.location }} --parameters environment=${{ parameters.environment }} \
-                --parameters workload=${{ parameters.workload }} --parameters artifact=${{ parameters.artifact }} \
-                --parameters deploymentIdentity=$servicePrincipalId
+                --parameters workload=${{ parameters.workload }} --parameters deploymentIdentity=$servicePrincipalId
           # setup application settings
           - task: AzureAppServiceSettings@1
             displayName: Azure App Service Settings
             inputs:
               azureSubscription: ${{ parameters.azureServiceConnection }}
-              appName: app-${{ parameters.workload }}-${{ parameters.artifact }}-${{ parameters.environment }}-${{ parameters.location }}
+              appName: app-${{ parameters.workload }}-${{ parameters.environment }}-${{ parameters.location }}
             # To deploy the settings on a slot, provide slot name as below. By default, the settings would be applied to the actual Web App (Production slot)
             # slotName: staging
               appSettings: |
@@ -117,7 +113,7 @@ stages:
             inputs:        
               azureSubscription: $(azureServiceConnection)
               resourceGroupName: rg-${{ parameters.workload }}-${{ parameters.environment }}-${{ parameters.location }} 
-              appName: app-${{ parameters.workload }}-${{ parameters.artifact }}-${{ parameters.environment }}-${{ parameters.location }}
+              appName: app-${{ parameters.workload }}-${{ parameters.environment }}-${{ parameters.location }}
               package: '$(System.DefaultWorkingDirectory)/$(artifact)-app.zip'
               deployToSlotOrASE: false
               deploymentMethod: zipDeploy

@@ -4,9 +4,6 @@ param workload string
 @description('Environment name')
 param environment string
 
-@description('Artifact name')
-param artifact string
-
 @description('Region for all resources in this module')
 param location string
 
@@ -19,11 +16,12 @@ param tags object = {}
 @description('Runtime stack')
 param linuxFxVersion string = 'node|16-lts'
 
-var subnetId = resourceId('rg-network-nonprod-eastus2-001', 'Microsoft.Network/VirtualNetworks/subnets', 'vnet-network-non-prod-eastus2-001', 'AppServiceSubnet')
+@description('App Service Subnet Id')
+param appServiceSubnetId string
 
 @description('An App service plan to host the app')
 resource appServicePlan 'Microsoft.Web/serverfarms@2020-06-01' = {
-  name: 'plan-${workload}-${artifact}-${environment}-${location}'
+  name: 'plan-${workload}-${environment}-${location}'
   location: location
   tags: tags
   sku: {
@@ -37,13 +35,12 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2020-06-01' = {
 
 @description('An App service to run the app')
 resource appService 'Microsoft.Web/sites@2022-03-01' = {
-  name: 'app-${workload}-${artifact}-${environment}-${location}'
+  name: 'app-${workload}-${environment}-${location}'
   location: location
   tags: tags
   properties: {
     serverFarmId: appServicePlan.id
-    //virtualNetworkSubnetId: vnet.properties.subnets[0].id
-    virtualNetworkSubnetId: subnetId
+    virtualNetworkSubnetId: appServiceSubnetId
     siteConfig: {
       vnetRouteAllEnabled: true
       linuxFxVersion: linuxFxVersion
@@ -81,7 +78,7 @@ resource appService 'Microsoft.Web/sites@2022-03-01' = {
 
 @description('An Application Insights resource for logging')
 resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
-  name: 'app-${workload}-${artifact}-${environment}-${location}'
+  name: 'app-${workload}-${environment}-${location}'
   location: location
   tags: tags
   kind: 'web'
@@ -91,16 +88,16 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
   }
 }
 
-@description('An App service slot to carryout blue green deployment')
-resource appservice_slot 'Microsoft.Web/sites/slots@2020-06-01' = if(environment == 'prd' || environment == 'qa'){ // creating a slot in qa for testing purposes. The condition for checking tst can be removed once testing blue green is done.
-  name: '${appService.name}/green'
-  kind: 'app'
-  location: location
-  tags: tags
-  properties: {
-    serverFarmId: appServicePlan.id
-  }
-}
+// @description('An App service slot to carryout blue green deployment')
+// resource appservice_slot 'Microsoft.Web/sites/slots@2020-06-01' = if(environment == 'prd' || environment == 'qa'){ // creating a slot in qa for testing purposes. The condition for checking tst can be removed once testing blue green is done.
+//   name: '${appService.name}/green'
+//   kind: 'app'
+//   location: location
+//   tags: tags
+//   properties: {
+//     serverFarmId: appServicePlan.id
+//   }
+// }
 
 
 output appService object = appService
