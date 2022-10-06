@@ -21,7 +21,7 @@ param appServiceSubnetId string
 
 @description('An App service plan to host the app')
 resource appServicePlan 'Microsoft.Web/serverfarms@2020-06-01' = {
-  name: 'plan-${workload}-${environment}-${location}'
+  name: 'plan-${workload}-${environment}-${location}-01'
   location: location
   tags: tags
   sku: {
@@ -35,7 +35,7 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2020-06-01' = {
 
 @description('An App service to run the app')
 resource appService 'Microsoft.Web/sites@2022-03-01' = {
-  name: 'app-${workload}-${environment}-${location}'
+  name: 'app-${workload}-${environment}-${location}-01'
   location: location
   tags: tags
   properties: {
@@ -78,7 +78,7 @@ resource appService 'Microsoft.Web/sites@2022-03-01' = {
 
 @description('An Application Insights resource for logging')
 resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
-  name: 'app-${workload}-${environment}-${location}'
+  name: 'app-${workload}-${environment}-${location}-01'
   location: location
   tags: tags
   kind: 'web'
