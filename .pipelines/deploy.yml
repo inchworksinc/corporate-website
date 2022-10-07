@@ -75,7 +75,7 @@ stages:
                 --name ${{ parameters.workload }}-${{ parameters.environment }}-$(Build.BuildNumber) \
                 --template-file ${{ parameters.bicepFile }} \
                 --parameters location=${{ parameters.location }} --parameters environment=${{ parameters.environment }} \
-                --parameters workload=${{ parameters.workload }} --parameters } --parameters deploymentIdentity=$servicePrincipalId
+                --parameters workload=${{ parameters.workload }} --parameters deploymentIdentity=$servicePrincipalId
           # deploy bicep code
           - task: AzureCLI@2
             displayName: Creating the infrastructure needed
