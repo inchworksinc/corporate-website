@@ -1,0 +1,37 @@
+# Name of the Pipeline
+name: corporate-website-build
+# Triggers
+on: 
+  push:
+    braches:
+     - main
+# Variables
+
+env:
+  APP_DIRECTORY: app
+
+# Jobs
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: 
+        node-version: [16.x]
+    steps: 
+    - name: checkingout source code
+      uses: actions/checkout@v3
+    - name: setup node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: ${{ env.APP_DIRECTORY }}/package-lock.json
+    - name: installing dependencies
+      run: npm install
+      working-directory: ${{ env.APP_DIRECTORY }}
+    - name: building artifacts
+      run: npm run build
+      working-directory: ${{ env.APP_DIRECTORY }}
+    - name: running unit tests
+      run: npm test
+      working-directory: ${{ env.APP_DIRECTORY }}
