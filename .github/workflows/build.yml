@@ -6,10 +6,8 @@ on:
     branches:
      - main
 # Variables
-
 env:
   APP_DIRECTORY: app
-
 # Jobs
 jobs:
   build:
