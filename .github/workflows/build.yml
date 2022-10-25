@@ -8,6 +8,7 @@ on:
 # Variables
 env:
   APP_DIRECTORY: app
+  INFRASTRUCTURE_DIRECTORY: infrastructure
 # Jobs
 jobs:
   build:
@@ -54,3 +55,18 @@ jobs:
         indicators: true
         output: both
         thresholds: '60 80'
+    - name: Uploading app directory
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ env.APP_DIRECTORY }}
+        path: | 
+              ${{ env.APP_DIRECTORY }}
+              !${{ env.APP_DIRECTORY }}/node_modules/*
+              !${{ env.APP_DIRECTORY }}/build/*
+              !${{ env.APP_DIRECTORY }}/coverage/*
+    - name: Uploading infra directory
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ env.INFRASTRUCTURE_DIRECTORY }}
+        path: ${{ env.INFRASTRUCTURE_DIRECTORY }}
+
