@@ -1,5 +1,5 @@
 # Name of the Pipeline
-name: corporate-website-build
+name: Corporate-website-build
 # Triggers
 on: 
   push:
@@ -16,20 +16,41 @@ jobs:
       matrix: 
         node-version: [16.x]
     steps: 
-    - name: checkingout source code
+    - name: Checkingout source code
       uses: actions/checkout@v3
-    - name: setup node.js ${{ matrix.node-version }}
+    - name: Setup node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
         cache-dependency-path: ${{ env.APP_DIRECTORY }}/package-lock.json
-    - name: installing dependencies
+    - name: Installing dependencies
       run: npm install
       working-directory: ${{ env.APP_DIRECTORY }}
-    - name: building artifacts
+    - name: Building artifacts
       run: npm run build
       working-directory: ${{ env.APP_DIRECTORY }}
-    - name: running unit tests
+    - name: Running unit tests
       run: npm test
       working-directory: ${{ env.APP_DIRECTORY }}
+    - name: Generating test report
+      uses: dorny/test-reporter@v1
+      if: success() || failure()
+      with:
+        name: Test report
+        path: app/junit.xml
+        reporter: jest-junit
+        list-tests: 'all'
+        fail-on-error: 'true'
+    - name: Generating code coverage report
+      uses: irongut/CodeCoverageSummary@v1.3.0
+      with:
+        filename: app/coverage/cobertura-coverage.xml
+        badge: true
+        fail_below_min: true
+        format: markdown
+        hide_branch_rate: false
+        hide_complexity: true
+        indicators: true
+        output: both
+        thresholds: '60 80'
