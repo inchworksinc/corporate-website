@@ -1,4 +1,4 @@
-name: corporate-website-development
+name: corporate-website-test
 on:
   workflow_run:
     workflows: ["corporate-website-build"]
@@ -20,7 +20,7 @@ jobs:
       slot_name: production
       build_id: ${{ inputs.build_id }}
       workload: corporate-website
-      environment: dev
+      environment: test
       location: eastus2
       instance_count: 01
     secrets: inherit
