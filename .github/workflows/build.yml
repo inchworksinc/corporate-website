@@ -1,5 +1,5 @@
 # Name of the Pipeline
-name: Corporate-website-build
+name: corporate-website-build
 # Triggers
 on: 
   push:
@@ -17,7 +17,7 @@ jobs:
       matrix: 
         node-version: [16.x]
     steps: 
-    - name: Checkingout source code
+    - name: Checking out source code
       uses: actions/checkout@v3
     - name: Setup node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
@@ -69,4 +69,3 @@ jobs:
       with:
         name: ${{ env.INFRASTRUCTURE_DIRECTORY }}
         path: ${{ env.INFRASTRUCTURE_DIRECTORY }}
-

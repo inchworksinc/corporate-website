@@ -1,0 +1,20 @@
+# Automated change creation
+# Infra validation
+# Infra deployment
+# Application Artifacts deployment
+name: corporate-website-development
+on:
+  workflow_run:
+    workflows: ["corporate-website-build"]
+    types: [completed]
+    branches:
+      - 'main'
+  workflow_dispatch:
+    inputs:
+      build_id:
+        description: build workflow id to pick artifacts and deploy
+        required: true
+#env:
+jobs:
+  deploy:
+    runs-on: ubuntu-latest    
