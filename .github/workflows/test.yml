@@ -1,10 +1,5 @@
 name: corporate-website-test
 on:
-  workflow_run:
-    workflows: ["corporate-website-build"]
-    types: [completed]
-    branches:
-      - 'main'
   workflow_dispatch:
     inputs:
       build_id:
@@ -12,7 +7,7 @@ on:
         required: true
 jobs:
   deploy:
-    uses: emmyamit/corporate-website/.github/workflows/deploy.yml@main
+    uses: inchworksinc/corporate-website/.github/workflows/deploy.yml@main
     with: 
       subscription: Sandbox
       template_file_path: infrastructure/main.bicep
