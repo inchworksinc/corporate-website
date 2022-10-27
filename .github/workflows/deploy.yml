@@ -52,13 +52,16 @@ jobs:
       - name: Login to azure
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          client-id: ${{ secrets.CLIENT_ID }}
+          tenant-id: ${{ secrets.TENANT_ID }}
+          subscription-id: ${{ secrets.SUBSCRIPTION_ID }}
       - name: Running preflight validation
         uses: azure/arm-deploy@v1
         with:
           #subscriptionId: ${{ inputs.subscription }}
           resourceGroupName: rg-${{ inputs.workload }}-${{ inputs.environment }}-${{ inputs.location }}-${{ inputs.instance_count }}
           template: ${{ inputs.template_file_path }}
+          parameters: environment=${{ inputs.environment }} workload=${{ inputs.workload }} deploymentIdentity=${{ secrets.CLIENT_ID }}
           deploymentmode: Validate
           scope: resourcegroup
       - name: Deploying azure infrastructure
@@ -67,6 +70,7 @@ jobs:
           #subscriptionId: ${{ inputs.subscription }}
           resourceGroupName: rg-${{ inputs.workload }}-${{ inputs.environment }}-${{ inputs.location }}-${{ inputs.instance_count }}
           template: ${{ inputs.template_file_path }}
+          parameters: environment=${{ inputs.environment }} workload=${{ inputs.workload }} deploymentIdentity=${{ secrets.CLIENT_ID }}
           deploymentmode: Incremental
           scope: resourcegroup
       - name: Publishing code to webapp
