@@ -23,4 +23,4 @@ jobs:
       environment: test
       location: eastus2
       instance_count: 01
-    secrets: inherit
+    secrets: inherit 
