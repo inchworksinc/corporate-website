@@ -20,5 +20,5 @@ jobs:
       workload: corporate-website
       environment: test
       location: eastus2
-      instance_count: 01
+      instance_count: "01"
     secrets: inherit 
