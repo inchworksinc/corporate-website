@@ -18,7 +18,12 @@ var environmentConfigurationMap = {
     allowedIpAddressCIDRs: [{
       name: 'Anjaneya Datla Home IP'
       address: '47.14.119.47/32'
-    }] // List of the IP's allowed to view the App in non-production environments
+    }
+    {
+      name: 'Amit Home IP'
+      address: '47.9.106.109/32' 
+    }
+  ] // List of the IP's allowed to view the App in non-production environments
   }
   test: { // test/qa environment
     sku: 'S2' // 2 cores, 3.50 GB RAM and 50 GB storage. Slots are supported on this tier. Temporarily using this tier in non-prod to test blue green deployments.
