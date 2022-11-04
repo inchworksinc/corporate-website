@@ -20,4 +20,3 @@ jobs:
       location: eastus2
       instance_count: "01"
     secrets: inherit
-    
