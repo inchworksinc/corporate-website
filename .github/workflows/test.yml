@@ -1,4 +1,4 @@
-name: corporate-website-test
+name: corporate-website-tst
 on:
   workflow_dispatch:
     inputs:
