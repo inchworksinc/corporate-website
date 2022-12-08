@@ -40,6 +40,9 @@ on:
         description: Two digit instance count for azure resources
         type: string
 
+env:
+  EXPIRY_TIME: 10 minutes
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -50,6 +53,13 @@ jobs:
         with:
           workflow: build.yml
           run_id: ${{ inputs.build_id }}
+      - name: Set environment variables
+        run: |
+            echo "expiry=`date -u -d "$EXPIRY_TIME" '+%Y-%m-%dT%H:%MZ'`" >> $GITHUB_ENV
+            echo "resourceGroupName=`rg-${{ inputs.workload }}-${{ inputs.environment }}-${{ inputs.location }}-${{ inputs.instance_count }}`" >> $GITHUB_ENV
+            echo "appName=`app-${{ inputs.workload }}-${{ inputs.environment }}-${{ inputs.location }}-${{ inputs.instance_count }}`" >> $GITHUB_ENV
+            echo "storageAccountName=stcorpwebeastus2dev01" >> $GITHUB_ENV
+            echo "containerName=`container-${{ inputs.workload }}-${{ inputs.environment }}-${{ inputs.location }}-${{ inputs.instance_count }}`" >> $GITHUB_ENV
       - name: Login to azure
         uses: azure/login@v1
         with:
@@ -60,7 +70,7 @@ jobs:
         uses: azure/arm-deploy@v1
         with:
           #subscriptionId: ${{ inputs.subscription }}
-          resourceGroupName: rg-${{ inputs.workload }}-${{ inputs.environment }}-${{ inputs.location }}-${{ inputs.instance_count }}
+          resourceGroupName: $resourceGroupName
           template: ${{ inputs.template_file_path }}
           parameters: environment=${{ inputs.environment }} workload=${{ inputs.workload }} deploymentIdentity=${{ secrets.CLIENT_ID }}
           deploymentmode: Validate
@@ -69,7 +79,7 @@ jobs:
         uses: azure/arm-deploy@v1
         with:
           #subscriptionId: ${{ inputs.subscription }}
-          resourceGroupName: rg-${{ inputs.workload }}-${{ inputs.environment }}-${{ inputs.location }}-${{ inputs.instance_count }}
+          resourceGroupName: $resourceGroupName
           template: ${{ inputs.template_file_path }}
           parameters: environment=${{ inputs.environment }} workload=${{ inputs.workload }} deploymentIdentity=${{ secrets.CLIENT_ID }}
           deploymentmode: Incremental
@@ -82,19 +92,18 @@ jobs:
       #     slot-name: ${{ inputs.slot_name }}
       - name: Set SAS token expiration
         run: echo "expiry=`date -u -d "$EXPIRY_TIME" '+%Y-%m-%dT%H:%MZ'`" >> $GITHUB_ENV
-
       - name: Azure CLI script
         uses: azure/CLI@v1
         with:
           azcliversion: 2.19.1
           inlineScript: |
             az extension add --name webapp
-            az storage account create   -n webapp-deployment-account   -g $GROUP -l westus
-            az storage container create -n latestCode --account-name $ACCOUNT
-            az storage blob upload --account-name $ACCOUNT -c $CONTAINER -f ${{ inputs.package }}
-            APP_URL=$(az storage blob generate-sas --full-uri --permissions r --expiry $EXPIRY --account-name $webapp-deployment-account -c latestCode -n app.zip | xargs)
+            az storage account create -n $storageAccountName  -g $resourceGroupName -l ${{ inputs.location }}
+            az storage container create -n $containerName --account-name $storageAccountName
+            az storage blob upload --account-name $storageAccountName -c $containerName -f ${{ inputs.package }}
+            APP_URL=$(az storage blob generate-sas --full-uri --permissions r --expiry $EXPIRY --account-name $storageAccountName -c $containerName -n app.zip | xargs)
             az rest --method PUT \
-                    --uri https://management.azure.com/subscriptions/${{ secrets.SUBSCRIPTION_ID }}/resourceGroups/rg-${{ inputs.workload }}-${{ inputs.environment }}-${{ inputs.location }}-${{ inputs.instance_count }}/providers/Microsoft.Web/sites/app-${{ inputs.workload }}-${{ inputs.environment }}-${{ inputs.location }}-${{ inputs.instance_count }}/extensions/onedeploy?api-version=2020-12-01 \
+                    --uri https://management.azure.com/subscriptions/${{ secrets.SUBSCRIPTION_ID }}/resourceGroups/$resourceGroupName/providers/Microsoft.Web/sites/$appName/extensions/onedeploy?api-version=2020-12-01 \
                     --body '{ 
                         "properties": { 
                             "properties": {
