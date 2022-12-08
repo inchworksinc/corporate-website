@@ -56,10 +56,10 @@ jobs:
       - name: Set environment variables
         run: |
             echo "expiry=`date -u -d "$EXPIRY_TIME" '+%Y-%m-%dT%H:%MZ'`" >> $GITHUB_ENV
-            echo "resourceGroupName=`rg-${{ inputs.workload }}-${{ inputs.environment }}-${{ inputs.location }}-${{ inputs.instance_count }}`" >> $GITHUB_ENV
-            echo "appName=`app-${{ inputs.workload }}-${{ inputs.environment }}-${{ inputs.location }}-${{ inputs.instance_count }}`" >> $GITHUB_ENV
+            echo "resourceGroupName=rg-${{ inputs.workload }}-${{ inputs.environment }}-${{ inputs.location }}-${{ inputs.instance_count }}" >> $GITHUB_ENV
+            echo "appName=app-${{ inputs.workload }}-${{ inputs.environment }}-${{ inputs.location }}-${{ inputs.instance_count }}" >> $GITHUB_ENV
             echo "storageAccountName=stcorpwebeastus2dev01" >> $GITHUB_ENV
-            echo "containerName=`container-${{ inputs.workload }}-${{ inputs.environment }}-${{ inputs.location }}-${{ inputs.instance_count }}`" >> $GITHUB_ENV
+            echo "containerName=container-${{ inputs.workload }}-${{ inputs.environment }}-${{ inputs.location }}-${{ inputs.instance_count }}" >> $GITHUB_ENV
       - name: Login to azure
         uses: azure/login@v1
         with:
