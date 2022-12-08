@@ -16,8 +16,15 @@ param tags object = {}
 @description('Runtime stack')
 param linuxFxVersion string = 'node|16-lts'
 
-@description('App Service Subnet Id')
-param appServiceSubnetId string
+@description('Default DNS Zone name for azure services')
+param privateDNSZoneName string = 'privatelink.azurewebsites.net'
+
+
+@description('Obtaining reference to the virtual network where API Management and Application Gateway are going to be deployed')
+resource virtualNetwork 'Microsoft.Network/virtualNetworks@2021-03-01' existing = {
+  name: configuration.virtualNetworkName
+  scope: resourceGroup(configuration.virtualNetworkResourceGroupName)
+}
 
 @description('An App service plan to host the app')
 resource appServicePlan 'Microsoft.Web/serverfarms@2020-06-01' = {
@@ -40,10 +47,11 @@ resource appService 'Microsoft.Web/sites@2022-03-01' = {
   tags: tags
   properties: {
     serverFarmId: appServicePlan.id
-    virtualNetworkSubnetId: appServiceSubnetId
+    //virtualNetworkSubnetId: appServiceSubnetId
     siteConfig: {
-      vnetRouteAllEnabled: true
+      //vnetRouteAllEnabled: true
       linuxFxVersion: linuxFxVersion
+      alwaysOn: true
       appSettings:[
         {
         name: 'SCM_DO_BUILD_DURING_DEPLOYMENT'
@@ -99,6 +107,59 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
 //   }
 // }
 
+
+resource privateEndpoint 'Microsoft.Network/privateEndpoints@2020-06-01' = {
+  name: 'pep-${workload}-${environment}-${location}-01'
+  location: location
+  properties: {
+    subnet: {
+      id: resourceId('Microsoft.Network/virtualNetworks/subnets',configuration.virtualNetworkName, configuration.subnetName)
+    }
+    privateLinkServiceConnections: [
+      {
+        name: 'plconnection-${workload}-${environment}'
+        properties: {
+          privateLinkServiceId: appService.id
+          groupIds: [
+            'sites'
+          ]
+        }
+      }
+    ]
+  }
+}
+
+resource privateDnsZones 'Microsoft.Network/privateDnsZones@2018-09-01' = {
+  name: privateDNSZoneName
+  location: 'global'
+}
+
+resource privateDnsZoneLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2018-09-01' = {
+  parent: privateDnsZones
+  name: '${privateDnsZones.name}-link'
+  location: 'global'
+  properties: {
+    registrationEnabled: false
+    virtualNetwork: {
+      id: virtualNetwork.id
+    }
+  }
+}
+
+resource privateDnsZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2020-03-01' = {
+  parent: privateEndpoint
+  name: 'privatednsgroupname'
+  properties: {
+    privateDnsZoneConfigs: [
+      {
+        name: '${workload}-${environment}-config'
+        properties: {
+          privateDnsZoneId: privateDnsZones.id
+        }
+      }
+    ]
+  }
+}
 
 output appService object = appService
 

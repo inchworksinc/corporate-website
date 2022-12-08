@@ -21,7 +21,7 @@ const Home: NextPage<PageProp> = ({ fact }) => {
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          This is a Server Side redered page Calling Httpd Inside VNET !
+          This is a Server Side redered page calling an API inside VNet !
         </h1>
 
         <p>

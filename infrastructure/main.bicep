@@ -33,13 +33,6 @@ var tags = {
   Monitorable: config.monitorable
 }
 
-@description('Obtaining reference to the subnet dedicated to the App Service Management with delegation to Microsoft.Web/serverfarms')
-resource appServiceSubnet 'Microsoft.Network/virtualNetworks/subnets@2021-08-01' existing = {
-  name: '${config.virtualNetworkName}/${config.subnetName}'
-  scope: resourceGroup(config.virtualNetworkResourceGroupName)
-}
-
-
 @description('A module to configure App Service resources')
 module appServiceModule 'app-service.bicep' = {
   name: '${resourceGroup().name}-app-service-module'
@@ -49,7 +42,6 @@ module appServiceModule 'app-service.bicep' = {
     environment: environment
     location: location
     configuration: config
-    appServiceSubnetId: appServiceSubnet.id
     tags: tags
   }
 }
