@@ -70,7 +70,7 @@ jobs:
         uses: azure/arm-deploy@v1
         with:
           #subscriptionId: ${{ inputs.subscription }}
-          resourceGroupName: $resourceGroupName
+          resourceGroupName: ${{ env.resourceGroupName }}
           template: ${{ inputs.template_file_path }}
           parameters: environment=${{ inputs.environment }} workload=${{ inputs.workload }} deploymentIdentity=${{ secrets.CLIENT_ID }}
           deploymentmode: Validate
