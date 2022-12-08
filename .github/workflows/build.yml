@@ -2,9 +2,9 @@
 name: corporate-website-build
 # Triggers
 on: 
-# push:
-#    branches:
-#     - main
+  push:
+    branches:
+      - main
 # Variables
 env:
   APP_DIRECTORY: app
