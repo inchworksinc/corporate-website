@@ -13,6 +13,7 @@ param location string = resourceGroup().location
 @description('Deployment Identity name')
 param deploymentIdentity string
 
+
 @description('A module that defines all the environment specific configuration')
 module configModule 'configuration.bicep' = {
   name: '${resourceGroup().name}-config-module'
@@ -23,6 +24,13 @@ module configModule 'configuration.bicep' = {
 }
 @description('A variable to hold all environment specific variables')
 var config = configModule.outputs.settings
+
+@description('Obtaining reference to the virtual network where API Management and Application Gateway are going to be deployed')
+resource virtualNetwork 'Microsoft.Network/virtualNetworks@2021-03-01' existing = {
+  name: config.virtualNetworkName
+  scope: resourceGroup(config.virtualNetworkResourceGroupName)
+}
+
 
 @description('The tags to be added for this workload')
 var tags = {
@@ -42,6 +50,7 @@ module appServiceModule 'app-service.bicep' = {
     environment: environment
     location: location
     configuration: config
+    virtualNetworkId: virtualNetwork.id
     tags: tags
   }
 }

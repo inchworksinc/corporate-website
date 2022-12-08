@@ -19,12 +19,8 @@ param linuxFxVersion string = 'node|16-lts'
 @description('Default DNS Zone name for azure services')
 param privateDNSZoneName string = 'privatelink.azurewebsites.net'
 
-
-@description('Obtaining reference to the virtual network where API Management and Application Gateway are going to be deployed')
-resource virtualNetwork 'Microsoft.Network/virtualNetworks@2021-03-01' existing = {
-  name: configuration.virtualNetworkName
-  scope: resourceGroup(configuration.virtualNetworkResourceGroupName)
-}
+@description('Virtual Network Id')
+param virtualNetworkId string
 
 @description('An App service plan to host the app')
 resource appServicePlan 'Microsoft.Web/serverfarms@2020-06-01' = {
@@ -141,7 +137,7 @@ resource privateDnsZoneLink 'Microsoft.Network/privateDnsZones/virtualNetworkLin
   properties: {
     registrationEnabled: false
     virtualNetwork: {
-      id: virtualNetwork.id
+      id: virtualNetworkId
     }
   }
 }
