@@ -22,6 +22,9 @@ param privateDNSZoneName string = 'privatelink.azurewebsites.net'
 @description('Virtual Network Id')
 param virtualNetworkId string
 
+@description('Private Endpoint Subnet Id')
+param subnetId string
+
 @description('An App service plan to host the app')
 resource appServicePlan 'Microsoft.Web/serverfarms@2020-06-01' = {
   name: 'plan-${workload}-${environment}-${location}-01'
@@ -109,7 +112,7 @@ resource privateEndpoint 'Microsoft.Network/privateEndpoints@2020-06-01' = {
   location: location
   properties: {
     subnet: {
-      id: resourceId('Microsoft.Network/virtualNetworks/subnets',configuration.virtualNetworkName, configuration.subnetName)
+      id: subnetId
     }
     privateLinkServiceConnections: [
       {

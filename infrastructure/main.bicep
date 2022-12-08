@@ -31,6 +31,12 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2021-03-01' existing 
   scope: resourceGroup(config.virtualNetworkResourceGroupName)
 }
 
+@description('Obtaining reference to the subnet for private endpoints')
+resource privateEndpointSubnet 'Microsoft.Network/virtualNetworks/subnets@2021-08-01' existing = {
+  name: '${config.virtualNetworkName}/${config.subnetName}'
+  scope: resourceGroup(config.virtualNetworkResourceGroupName)
+}
+
 
 @description('The tags to be added for this workload')
 var tags = {
@@ -51,6 +57,7 @@ module appServiceModule 'app-service.bicep' = {
     location: location
     configuration: config
     virtualNetworkId: virtualNetwork.id
+    subnetId: privateEndpointSubnet.id
     tags: tags
   }
 }
