@@ -43,7 +43,7 @@ const Home: NextPage<PageProp> = ({ fact }) => {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   console.log("Invoking API Management Instance using internal endpoint");
-  const response = await axios.get("https://apim-sharedsvcs-prd-eastus2-01.azure-api.net/echo/resource?param1=sample")
+  const response = await axios.get("https://apim-api-management-dev-eastus2-01.azure-api.net/dev01/echoapi/resources")
   console.info("headers:", response.headers)
   const responseCode = response.status;
 
