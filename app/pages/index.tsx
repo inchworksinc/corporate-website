@@ -28,7 +28,6 @@ const Home: NextPage = () => {
             </a>
           </Link>
 
-
           <Link href="/ssr-vnet">
             <a className={styles.card}>
               <h2>Server Side Rendering (Vnet API Call)</h2>

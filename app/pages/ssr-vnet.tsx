@@ -1,7 +1,7 @@
 import type { NextPage, GetServerSideProps } from "next";
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
-const axios = require('axios').default;
+const axios = require("axios").default;
 
 interface PageProp {
   fact: {
@@ -10,8 +10,8 @@ interface PageProp {
 }
 
 const Home: NextPage<PageProp> = ({ fact }) => {
-    console.log(`fact - ${fact}`)
-    console.log(`fact - ${fact.fact}`)
+  console.log(`fact - ${fact}`);
+  console.log(`fact - ${fact.fact}`);
   return (
     <div className={styles.container}>
       <Head>
@@ -20,7 +20,9 @@ const Home: NextPage<PageProp> = ({ fact }) => {
       </Head>
 
       <main className={styles.main}>
-        <h1 className={styles.title}>This is a Server Side redered page Calling Httpd Inside VNET !</h1>
+        <h1 className={styles.title}>
+          This is a Server Side redered page Calling Httpd Inside VNET !
+        </h1>
 
         <p>
           If a page uses Server-side Rendering, the page HTML is generated on
@@ -43,13 +45,15 @@ const Home: NextPage<PageProp> = ({ fact }) => {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   console.log("Invoking API Management Instance using internal endpoint");
-  const response = await axios.get("https://apim-api-management-dev-eastus2-01.azure-api.net/dev01/echoapi/resources")
-  console.info("headers:", response.headers)
+  const response = await axios.get(
+    "https://apim-api-management-dev-eastus2-01.azure-api.net/dev01/echoapi/resources"
+  );
+  console.info("headers:", response.headers);
   const responseCode = response.status;
 
   const fact = {
-    fact: responseCode
-  }
+    fact: responseCode,
+  };
 
   return {
     props: {
