@@ -15,7 +15,7 @@ permissions:
   contents: read
 jobs:
   deploy:
-    uses: fbitn/corporate-website/.github/workflows/deploy.yml@main
+    uses: inchworksinc/corporate-website/.github/workflows/deploy.yml@main
     with: 
       subscription: Sandbox
       template_file_path: infrastructure/main.bicep
