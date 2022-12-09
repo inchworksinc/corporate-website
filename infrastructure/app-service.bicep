@@ -25,6 +25,9 @@ param virtualNetworkId string
 @description('Private Endpoint Subnet Id')
 param subnetId string
 
+@description('App Service Subnet Id')
+param appServiceSubnetId string
+
 @description('An App service plan to host the app')
 resource appServicePlan 'Microsoft.Web/serverfarms@2020-06-01' = {
   name: 'plan-${workload}-${environment}-${location}-01'
@@ -46,9 +49,9 @@ resource appService 'Microsoft.Web/sites@2022-03-01' = {
   tags: tags
   properties: {
     serverFarmId: appServicePlan.id
-    //virtualNetworkSubnetId: appServiceSubnetId
+    virtualNetworkSubnetId: appServiceSubnetId
     siteConfig: {
-      //vnetRouteAllEnabled: true
+      vnetRouteAllEnabled: true
       linuxFxVersion: linuxFxVersion
       alwaysOn: true
       appSettings:[

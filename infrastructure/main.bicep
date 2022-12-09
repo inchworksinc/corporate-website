@@ -31,6 +31,12 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2021-03-01' existing 
   scope: resourceGroup(config.virtualNetworkResourceGroupName)
 }
 
+@description('Obtaining reference to the subnet dedicated to the App Service Management with delegation to Microsoft.Web/serverfarms')
+resource appServiceSubnet 'Microsoft.Network/virtualNetworks/subnets@2021-08-01' existing = {
+  name: '${config.virtualNetworkName}/${config.subnetName}'
+  scope: resourceGroup(config.virtualNetworkResourceGroupName)
+}
+
 @description('Obtaining reference to the subnet for private endpoints')
 resource privateEndpointSubnet 'Microsoft.Network/virtualNetworks/subnets@2021-08-01' existing = {
   name: '${config.virtualNetworkName}/${config.subnetName}'
@@ -58,6 +64,7 @@ module appServiceModule 'app-service.bicep' = {
     configuration: config
     virtualNetworkId: virtualNetwork.id
     subnetId: privateEndpointSubnet.id
+    appServiceSubnetId: appServiceSubnet.id
     tags: tags
   }
 }
