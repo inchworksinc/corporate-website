@@ -45,7 +45,7 @@ env:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: vm-linuxunner-eastus02-01
     environment: ${{ inputs.environment }}
     steps:
       - name: Downloading artifacts
@@ -84,31 +84,31 @@ jobs:
           parameters: environment=${{ inputs.environment }} workload=${{ inputs.workload }} deploymentIdentity=${{ secrets.CLIENT_ID }}
           deploymentmode: Incremental
           scope: resourcegroup
-      # - name: Publishing code to webapp
-      #   uses: azure/webapps-deploy@v2
-      #   with:
-      #     app-name: app-${{ inputs.workload }}-${{ inputs.environment }}-${{ inputs.location }}-${{ inputs.instance_count }}
-      #     package: ${{ inputs.package }}
-      #     slot-name: ${{ inputs.slot_name }}
-
-      - name: Azure CLI script
-        uses: azure/CLI@v1
+      - name: Publishing code to webapp
+        uses: azure/webapps-deploy@v2
         with:
-          azcliversion: 2.30.0
-          inlineScript: |
-            az extension add --name webapp
-            az config set extension.use_dynamic_install=yes_without_prompt
-            az storage account create -n ${{ env.storageAccountName }}  -g ${{ env.resourceGroupName }} -l ${{ inputs.location }}
-            az storage container create -n ${{ env.containerName }} --account-name ${{ env.storageAccountName }}
-            az storage blob directory upload --account-name ${{ env.storageAccountName }} -c ${{ env.containerName }} -f ${{ inputs.package }}
-            APP_URL=$(az storage blob generate-sas --full-uri --permissions r --expiry $EXPIRY --account-name ${{ env.storageAccountName }} -c ${{ env.containerName }} -n app.zip | xargs)
-            az rest --method PUT \
-                    --uri https://management.azure.com/subscriptions/${{ secrets.SUBSCRIPTION_ID }}/resourceGroups/${{ env.resourceGroupName }}/providers/Microsoft.Web/sites/${{ env.appName }}/extensions/onedeploy?api-version=2020-12-01 \
-                    --body '{ 
-                        "properties": { 
-                            "properties": {
-                                "packageUri": "'"${APP_URL}"'"
-                            }, 
-                            "type": "zip",
-                        }
-                    }'   
+          app-name: app-${{ inputs.workload }}-${{ inputs.environment }}-${{ inputs.location }}-${{ inputs.instance_count }}
+          package: ${{ inputs.package }}
+          slot-name: ${{ inputs.slot_name }}
+
+      # - name: Azure CLI script
+      #   uses: azure/CLI@v1
+      #   with:
+      #     azcliversion: 2.30.0
+      #     inlineScript: |
+      #       az extension add --name webapp
+      #       az config set extension.use_dynamic_install=yes_without_prompt
+      #       az storage account create -n ${{ env.storageAccountName }}  -g ${{ env.resourceGroupName }} -l ${{ inputs.location }}
+      #       az storage container create -n ${{ env.containerName }} --account-name ${{ env.storageAccountName }}
+      #       az storage blob directory upload --account-name ${{ env.storageAccountName }} -c ${{ env.containerName }} -f ${{ inputs.package }}
+      #       APP_URL=$(az storage blob generate-sas --full-uri --permissions r --expiry $EXPIRY --account-name ${{ env.storageAccountName }} -c ${{ env.containerName }} -n app.zip | xargs)
+      #       az rest --method PUT \
+      #               --uri https://management.azure.com/subscriptions/${{ secrets.SUBSCRIPTION_ID }}/resourceGroups/${{ env.resourceGroupName }}/providers/Microsoft.Web/sites/${{ env.appName }}/extensions/onedeploy?api-version=2020-12-01 \
+      #               --body '{ 
+      #                   "properties": { 
+      #                       "properties": {
+      #                           "packageUri": "'"${APP_URL}"'"
+      #                       }, 
+      #                       "type": "zip",
+      #                   }
+      #               }'   
