@@ -97,6 +97,7 @@ jobs:
           azcliversion: 2.30.0
           inlineScript: |
             az extension add --name webapp
+            az config set extension.use_dynamic_install=yes_without_prompt
             az storage account create -n ${{ env.storageAccountName }}  -g ${{ env.resourceGroupName }} -l ${{ inputs.location }}
             az storage container create -n ${{ env.containerName }} --account-name ${{ env.storageAccountName }}
             az storage blob directory upload --account-name ${{ env.storageAccountName }} -c ${{ env.containerName }} -f ${{ inputs.package }}
