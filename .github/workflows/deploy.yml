@@ -45,7 +45,7 @@ env:
 
 jobs:
   deploy:
-    runs-on: vm-linuxunner-eastus02-01
+    runs-on: self-hosted
     environment: ${{ inputs.environment }}
     steps:
       - name: Downloading artifacts
