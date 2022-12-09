@@ -60,7 +60,6 @@ jobs:
             echo "appName=app-${{ inputs.workload }}-${{ inputs.environment }}-${{ inputs.location }}-${{ inputs.instance_count }}" >> $GITHUB_ENV
             echo "storageAccountName=stcorpwebeastus2dev01" >> $GITHUB_ENV
             echo "containerName=container-${{ inputs.workload }}-${{ inputs.environment }}-${{ inputs.location }}-${{ inputs.instance_count }}" >> $GITHUB_ENV
-            ls -al
       - name: Login to azure
         uses: azure/login@v1
         with:
@@ -100,7 +99,7 @@ jobs:
             az extension add --name webapp
             az storage account create -n ${{ env.storageAccountName }}  -g ${{ env.resourceGroupName }} -l ${{ inputs.location }}
             az storage container create -n ${{ env.containerName }} --account-name ${{ env.storageAccountName }}
-            az storage blob upload --account-name ${{ env.storageAccountName }} -c ${{ env.containerName }} -f ${{ inputs.package }}
+            az storage blob directory upload --account-name ${{ env.storageAccountName }} -c ${{ env.containerName }} -f ${{ inputs.package }}
             APP_URL=$(az storage blob generate-sas --full-uri --permissions r --expiry $EXPIRY --account-name ${{ env.storageAccountName }} -c ${{ env.containerName }} -n app.zip | xargs)
             az rest --method PUT \
                     --uri https://management.azure.com/subscriptions/${{ secrets.SUBSCRIPTION_ID }}/resourceGroups/${{ env.resourceGroupName }}/providers/Microsoft.Web/sites/${{ env.appName }}/extensions/onedeploy?api-version=2020-12-01 \
