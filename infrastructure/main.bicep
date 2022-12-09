@@ -33,7 +33,7 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2021-03-01' existing 
 
 @description('Obtaining reference to the subnet dedicated to the App Service Management with delegation to Microsoft.Web/serverfarms')
 resource appServiceSubnet 'Microsoft.Network/virtualNetworks/subnets@2021-08-01' existing = {
-  name: '${config.virtualNetworkName}/${config.subnetName}'
+  name: '${config.virtualNetworkName}/${config.appServiceSubnet}'
   scope: resourceGroup(config.virtualNetworkResourceGroupName)
 }
 

@@ -15,6 +15,7 @@ var environmentConfigurationMap = {
     virtualNetworkName: 'vnet-network-non-prod-eastus2-001'
     virtualNetworkResourceGroupName: 'rg-network-nonprod-eastus2-001'
     subnetName: 'snet-private-endpoints-non-prod-eastus2' // Name of the subnet for private endpoint
+    appServiceSubnet: 'AppServiceSubnet' // Name of the subnet for private endpoint
     allowedIpAddressCIDRs: [{
       name: 'Anjaneya Datla Home IP'
       address: '47.14.119.47/32'
