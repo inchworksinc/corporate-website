@@ -16,11 +16,11 @@ param tags object = {}
 @description('Runtime stack')
 param linuxFxVersion string = 'node|16-lts'
 
-@description('Default DNS Zone name for azure services')
-param privateDNSZoneName string = 'privatelink.azurewebsites.net'
+// @description('Default DNS Zone name for azure services')
+// param privateDNSZoneName string = 'privatelink.azurewebsites.net'
 
-@description('Virtual Network Id')
-param virtualNetworkId string
+// @description('Virtual Network Id')
+// param virtualNetworkId string
 
 @description('Private Endpoint Subnet Id')
 param subnetId string

@@ -25,11 +25,11 @@ module configModule 'configuration.bicep' = {
 @description('A variable to hold all environment specific variables')
 var config = configModule.outputs.settings
 
-@description('Obtaining reference to the virtual network where API Management and Application Gateway are going to be deployed')
-resource virtualNetwork 'Microsoft.Network/virtualNetworks@2021-03-01' existing = {
-  name: config.virtualNetworkName
-  scope: resourceGroup(config.virtualNetworkResourceGroupName)
-}
+// @description('Obtaining reference to the virtual network where API Management and Application Gateway are going to be deployed')
+// resource virtualNetwork 'Microsoft.Network/virtualNetworks@2021-03-01' existing = {
+//   name: config.virtualNetworkName
+//   scope: resourceGroup(config.virtualNetworkResourceGroupName)
+// }
 
 @description('Obtaining reference to the subnet dedicated to the App Service Management with delegation to Microsoft.Web/serverfarms')
 resource appServiceSubnet 'Microsoft.Network/virtualNetworks/subnets@2021-08-01' existing = {
@@ -62,7 +62,7 @@ module appServiceModule 'app-service.bicep' = {
     environment: environment
     location: location
     configuration: config
-    virtualNetworkId: virtualNetwork.id
+    //virtualNetworkId: virtualNetwork.id
     subnetId: privateEndpointSubnet.id
     appServiceSubnetId: appServiceSubnet.id
     tags: tags
