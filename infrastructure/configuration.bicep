@@ -12,10 +12,10 @@ var environmentConfigurationMap = {
   dev: {
     sku: 'B1' // 1 core, 1.75 GB RAM and 10 GB storage. Slots are not supported on this tier.
     monitorable: 'N' // Flag to indicate if the app needs to be monitored on dynatrace. Y for Yes, N for No
-    virtualNetworkName: 'vnet-network-non-prod-eastus2-001'
-    virtualNetworkResourceGroupName: 'rg-network-nonprod-eastus2-001'
+    virtualNetworkName: 'iw-vnet-eastus2-36e1b171-4414-48cd-a0a7-04a66b3ffb0f'
+    virtualNetworkResourceGroupName: 'iw-vnet-eastus2'
     subnetName: 'snet-private-endpoints-non-prod-eastus2' // Name of the subnet for private endpoint
-    appServiceSubnet: 'AppServiceSubnet' // Name of the subnet for private endpoint
+    appServiceSubnet: 'snet-dedicatedappservice-non-prod-eastus2' // Name of the subnet for private endpoint
     allowedIpAddressCIDRs: [{
       name: 'Anjaneya Datla Home IP'
       address: '47.14.119.47/32'
