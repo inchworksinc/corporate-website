@@ -54,7 +54,7 @@ resource appService 'Microsoft.Web/sites@2022-03-01' = {
       vnetRouteAllEnabled: true
       linuxFxVersion: linuxFxVersion
       alwaysOn: true
-      publicNetworkAccess: 'Disabled'
+      publicNetworkAccess: 'Disabled' // important to disable this or the deployment wont go through in corp subscriptions.
       appSettings:[
         {
         name: 'SCM_DO_BUILD_DURING_DEPLOYMENT'
