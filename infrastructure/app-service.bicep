@@ -132,37 +132,37 @@ resource privateEndpoint 'Microsoft.Network/privateEndpoints@2020-06-01' = {
   }
 }
 
-resource privateDnsZones 'Microsoft.Network/privateDnsZones@2018-09-01' = {
-  name: privateDNSZoneName
-  location: 'global'
-}
+// resource privateDnsZones 'Microsoft.Network/privateDnsZones@2018-09-01' = {
+//   name: privateDNSZoneName
+//   location: 'global'
+// }
 
-resource privateDnsZoneLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2018-09-01' = {
-  parent: privateDnsZones
-  name: '${privateDnsZones.name}-link'
-  location: 'global'
-  properties: {
-    registrationEnabled: false
-    virtualNetwork: {
-      id: virtualNetworkId
-    }
-  }
-}
+// resource privateDnsZoneLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2018-09-01' = {
+//   parent: privateDnsZones
+//   name: '${privateDnsZones.name}-link'
+//   location: 'global'
+//   properties: {
+//     registrationEnabled: false
+//     virtualNetwork: {
+//       id: virtualNetworkId
+//     }
+//   }
+// }
 
-resource privateDnsZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2020-03-01' = {
-  parent: privateEndpoint
-  name: 'privatednsgroupname'
-  properties: {
-    privateDnsZoneConfigs: [
-      {
-        name: '${workload}-${environment}-config'
-        properties: {
-          privateDnsZoneId: privateDnsZones.id
-        }
-      }
-    ]
-  }
-}
+// resource privateDnsZoneGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2020-03-01' = {
+//   parent: privateEndpoint
+//   name: 'privatednsgroupname'
+//   properties: {
+//     privateDnsZoneConfigs: [
+//       {
+//         name: '${workload}-${environment}-config'
+//         properties: {
+//           privateDnsZoneId: privateDnsZones.id
+//         }
+//       }
+//     ]
+//   }
+// }
 
 output appService object = appService
 
