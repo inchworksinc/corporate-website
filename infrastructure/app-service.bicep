@@ -54,6 +54,7 @@ resource appService 'Microsoft.Web/sites@2022-03-01' = {
       vnetRouteAllEnabled: true
       linuxFxVersion: linuxFxVersion
       alwaysOn: true
+      publicNetworkAccess: 'Disabled'
       appSettings:[
         {
         name: 'SCM_DO_BUILD_DURING_DEPLOYMENT'
