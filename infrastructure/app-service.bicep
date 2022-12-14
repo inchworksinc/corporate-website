@@ -50,6 +50,7 @@ resource appService 'Microsoft.Web/sites@2022-03-01' = {
   properties: {
     serverFarmId: appServicePlan.id
     virtualNetworkSubnetId: appServiceSubnetId
+    publicNetworkAccess: 'Disabled'
     siteConfig: {
       vnetRouteAllEnabled: true
       linuxFxVersion: linuxFxVersion
